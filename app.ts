@@ -2034,8 +2034,6 @@ function planFetch(wants: string[], haves: string[], clientShallow: Set<string>,
       if (commit !== undefined && commit.type === 'commit') {
         haveExclude.add(parseCommit(commit.data).tree);
         // the tree's own closure: walk the tree only, not the parents
-        const treeClosure = closureOf([]);
-        void treeClosure;
         const stack = [parseCommit(commit.data).tree];
         while (stack.length > 0) {
           const oid = stack.pop() as string;
@@ -2912,6 +2910,67 @@ const GQL_TYPES: Record<string, GqlTypeDef> = {
   Float: { kind: 'SCALAR' },
   Boolean: { kind: 'SCALAR' },
   ID: { kind: 'SCALAR' },
+  __Type: {
+    kind: 'OBJECT',
+    fields: [
+      { name: 'kind', type: 'String!' },
+      { name: 'name', type: 'String' },
+      { name: 'description', type: 'String' },
+      { name: 'fields', type: '[__Field]', args: { includeDeprecated: 'Boolean' } },
+      { name: 'inputFields', type: '[__InputValue]' },
+      { name: 'enumValues', type: '[__EnumValue]', args: { includeDeprecated: 'Boolean' } },
+      { name: 'possibleTypes', type: '[__Type]' },
+      { name: 'ofType', type: '__Type' },
+    ],
+  },
+  __Field: {
+    kind: 'OBJECT',
+    fields: [
+      { name: 'name', type: 'String!' },
+      { name: 'description', type: 'String' },
+      { name: 'args', type: '[__InputValue!]!' },
+      { name: 'type', type: '__Type!' },
+      { name: 'isDeprecated', type: 'Boolean!' },
+      { name: 'deprecationReason', type: 'String' },
+    ],
+  },
+  __InputValue: {
+    kind: 'OBJECT',
+    fields: [
+      { name: 'name', type: 'String!' },
+      { name: 'description', type: 'String' },
+      { name: 'type', type: '__Type!' },
+      { name: 'defaultValue', type: 'String' },
+    ],
+  },
+  __EnumValue: {
+    kind: 'OBJECT',
+    fields: [
+      { name: 'name', type: 'String!' },
+      { name: 'description', type: 'String' },
+      { name: 'isDeprecated', type: 'Boolean!' },
+      { name: 'deprecationReason', type: 'String' },
+    ],
+  },
+  __Schema: {
+    kind: 'OBJECT',
+    fields: [
+      { name: 'types', type: '[__Type!]!' },
+      { name: 'queryType', type: '__Type!' },
+      { name: 'mutationType', type: '__Type' },
+      { name: 'subscriptionType', type: '__Type' },
+      { name: 'directives', type: '[__Directive!]!' },
+    ],
+  },
+  __Directive: {
+    kind: 'OBJECT',
+    fields: [
+      { name: 'name', type: 'String!' },
+      { name: 'description', type: 'String' },
+      { name: 'locations', type: '[String!]!' },
+      { name: 'args', type: '[__InputValue!]!' },
+    ],
+  },
 };
 
 // Executor sources: domain objects wrapped with their GraphQL type and their opaque node id.
